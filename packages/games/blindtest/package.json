@@ -1,0 +1,8 @@
+{
+    "name": "@myrtille/game-blindtest",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Blindtest — Music quiz with buzzer",
+    "main": "index.js",
+    "type": "module"
+}

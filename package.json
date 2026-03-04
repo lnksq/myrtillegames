@@ -1,0 +1,22 @@
+{
+  "name": "myrtillegames",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Myrtille Games — A multiplayer game hub",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "packages/games/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/hub",
+    "dev:server": "npm run dev --workspace=apps/server",
+    "dev:all": "concurrently \"npm run dev\" \"npm run dev:server\"",
+    "build": "npm run build --workspace=apps/hub",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "test": "echo \"No tests configured yet\""
+  },
+  "keywords": ["games", "multiplayer", "hub"],
+  "author": "Myrtille Games Team",
+  "license": "UNLICENSED"
+}

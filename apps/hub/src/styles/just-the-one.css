@@ -1,0 +1,842 @@
+/* ─── Just the One — Game UI ───────────────────────────────── */
+/*
+ * Digital, controller-like aesthetic. No physical board game elements.
+ * Uses the same CSS variables as hub.css (defined in global.css).
+ */
+
+/* ═══════════════════════════════════════════════════════════ */
+/*  ROOT GAME WRAPPER                                          */
+/* ═══════════════════════════════════════════════════════════ */
+
+.jto {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 24px 20px;
+    min-height: 100%;
+    font-family: var(--font-base, 'Inter', system-ui, sans-serif);
+    box-sizing: border-box;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*  TITLE SCREEN                                              */
+/* ═══════════════════════════════════════════════════════════ */
+
+.jto-title {
+    max-width: 420px;
+    width: 100%;
+    margin: 0 auto;
+    gap: 12px;
+    padding-top: 32px;
+}
+
+.jto-logo {
+    font-size: 56px;
+    line-height: 1;
+    filter: drop-shadow(0 4px 12px rgba(124, 58, 237, 0.3));
+    animation: brand-float 3s ease-in-out infinite;
+}
+
+@keyframes brand-float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+.jto-title__name {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--myrtille-500), var(--myrtille-300));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.jto-title__sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    margin: 0;
+}
+
+.jto-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*  INPUTS                                                     */
+/* ═══════════════════════════════════════════════════════════ */
+
+.jto-input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border-soft);
+    background: var(--bg-card);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.jto-input:focus {
+    border-color: var(--myrtille-400);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.jto-input--code {
+    width: 120px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.jto-input--big {
+    font-size: 18px;
+    padding: 14px 18px;
+    text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*  BUTTONS                                                    */
+/* ═══════════════════════════════════════════════════════════ */
+
+.jto-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 150ms ease;
+    white-space: nowrap;
+    border: none;
+}
+
+.jto-btn--primary {
+    background: linear-gradient(135deg, var(--myrtille-500), var(--myrtille-600));
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(74, 74, 223, 0.35);
+}
+
+.jto-btn--primary:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(74, 74, 223, 0.45);
+}
+
+.jto-btn--primary:active {
+    transform: scale(0.97);
+}
+
+.jto-btn--primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.jto-btn--secondary {
+    background: var(--bg-card);
+    color: var(--myrtille-600);
+    border: 1.5px solid var(--myrtille-300);
+}
+
+.jto-btn--secondary:hover {
+    background: rgba(124, 58, 237, 0.06);
+}
+
+.jto-btn--ghost {
+    background: transparent;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 13px;
+    padding: 8px 16px;
+}
+
+.jto-btn--ghost:hover {
+    color: var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*  TITLE SCREEN: JOIN ROW & DIVIDER                          */
+/* ═══════════════════════════════════════════════════════════ */
+
+.jto-title__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.jto-divider {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    position: relative;
+}
+
+.jto-divider::before,
+.jto-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: var(--border-soft);
+}
+
+.jto-divider::before {
+    left: 0;
+}
+
+.jto-divider::after {
+    right: 0;
+}
+
+.jto-join-row {
+    display: flex;
+    gap: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*  LOBBY                                                      */
+/* ═══════════════════════════════════════════════════════════ */
+
+.jto-lobby {
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto;
+    gap: 24px;
+}
+
+.jto-lobby__code-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--myrtille-200, #b8b8f5);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(74, 74, 223, 0.1);
+}
+
+.jto-lobby__code-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.jto-lobby__code {
+    font-size: 48px;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    color: var(--myrtille-500);
+    line-height: 1;
+}
+
+.jto-lobby__code-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.jto-lobby__players-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin: 0 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.jto-lobby__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.jto-lobby__player {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+}
+
+.jto-lobby__player.is-host {
+    border-color: var(--myrtille-300);
+    background: rgba(124, 58, 237, 0.04);
+}
+
+.jto-lobby__player-avatar {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.jto-lobby__player-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.jto-lobby__host-badge {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--myrtille-600);
+    background: rgba(124, 58, 237, 0.1);
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.jto-lobby__waiting {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+    font-style: italic;
+}
+
+.jto-start-btn {
+    width: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*  IN-GAME LAYOUT                                            */
+/* ═══════════════════════════════════════════════════════════ */
+
+.jto-game {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.jto-phase-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.jto-word-secret {
+    color: var(--myrtille-500);
+    font-weight: 700;
+}
+
+/* ─── Scoreboard ─────────────────────────────────────────── */
+
+.jto-scoreboard {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding: 10px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    width: 100%;
+}
+
+.jto-scoreboard__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.jto-scoreboard__label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.jto-scoreboard__value {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.jto-scoreboard__value.is-success {
+    color: #16a34a;
+}
+
+/* ─── Number Selection ───────────────────────────────────── */
+
+.jto-card-reveal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 28px 20px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-soft);
+    border-radius: 16px;
+    width: 100%;
+}
+
+.jto-card-reveal__instruction {
+    font-size: 15px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.jto-number-grid {
+    display: flex;
+    gap: 10px;
+}
+
+.jto-number-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: var(--bg-card);
+    border: 2px solid var(--border-soft);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--myrtille-600);
+    cursor: pointer;
+    transition: all 150ms ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.jto-number-btn:hover {
+    background: var(--myrtille-500);
+    color: #fff;
+    border-color: var(--myrtille-500);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(74, 74, 223, 0.35);
+}
+
+.jto-number-btn:active {
+    transform: scale(0.95);
+}
+
+/* ─── Card View (non-guesser) ────────────────────────────── */
+
+.jto-card-view {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.jto-card-word {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+}
+
+.jto-card-word__num {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--myrtille-500);
+    min-width: 20px;
+}
+
+.jto-card-word__text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* ─── Waiting States ─────────────────────────────────────── */
+
+.jto-waiting-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 28px;
+    width: 100%;
+}
+
+.jto-eyes-closed {
+    font-size: 48px;
+    animation: bob 2s ease-in-out infinite;
+}
+
+@keyframes bob {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.jto-waiting-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.jto-submitted-badge {
+    font-size: 18px;
+    font-weight: 700;
+    color: #16a34a;
+}
+
+/* ─── Clue Input ─────────────────────────────────────────── */
+
+.jto-clue-input-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 24px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-soft);
+    border-radius: 16px;
+}
+
+.jto-clue-instruction {
+    font-size: 15px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.jto-clue-form {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.jto-clue-reminder {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin: 0;
+    text-align: center;
+}
+
+/* ─── Clue Display (guessing phase) ─────────────────────── */
+
+.jto-eliminated-notice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 10px;
+    font-size: 13px;
+    color: #dc2626;
+    font-weight: 600;
+    width: 100%;
+}
+
+.jto-clues-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    width: 100%;
+}
+
+.jto-clues-display--reveal h4 {
+    width: 100%;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin: 0 0 4px;
+    text-align: center;
+}
+
+.jto-clue-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 18px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--myrtille-200, #b8b8f5);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(74, 74, 223, 0.1);
+    transition: transform 200ms ease;
+    min-width: 100px;
+}
+
+.jto-clue-card:hover {
+    transform: translateY(-2px);
+}
+
+.jto-clue-card.is-invalid {
+    opacity: 0.45;
+    border-color: var(--border-soft);
+    box-shadow: none;
+    text-decoration: line-through;
+    background: var(--bg-utility);
+}
+
+.jto-clue-card__word {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+}
+
+.jto-clue-card__from {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-style: normal;
+}
+
+.jto-no-clues {
+    font-size: 16px;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 24px;
+}
+
+/* ─── Guessing Input ─────────────────────────────────────── */
+
+.jto-guess-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-soft);
+    border-radius: 16px;
+}
+
+.jto-guess-instruction {
+    font-size: 14px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 0;
+}
+
+/* ─── Result / Scoring ───────────────────────────────────── */
+
+.jto-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 24px;
+    border-radius: 16px;
+    width: 100%;
+    border: 2px solid transparent;
+    text-align: center;
+}
+
+.jto-result.is-success {
+    background: rgba(22, 163, 74, 0.06);
+    border-color: rgba(22, 163, 74, 0.25);
+}
+
+.jto-result.is-fail {
+    background: rgba(239, 68, 68, 0.06);
+    border-color: rgba(239, 68, 68, 0.25);
+}
+
+.jto-result.is-pass {
+    background: rgba(234, 179, 8, 0.06);
+    border-color: rgba(234, 179, 8, 0.25);
+}
+
+.jto-result__icon {
+    font-size: 40px;
+}
+
+.jto-result__word {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.jto-result__guess {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.jto-result__msg {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.jto-result__penalty {
+    font-size: 12px;
+    color: #dc2626;
+    font-weight: 600;
+    margin: 0;
+}
+
+.jto-next-btn {
+    width: 100%;
+    max-width: 300px;
+}
+
+/* ─── Game Over ──────────────────────────────────────────── */
+
+.jto-gameover {
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    padding-top: 20px;
+}
+
+.jto-gameover__icon {
+    font-size: 64px;
+    filter: drop-shadow(0 4px 12px rgba(124, 58, 237, 0.3));
+}
+
+.jto-gameover__title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.jto-gameover__score {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.jto-gameover__score-num {
+    font-size: 64px;
+    font-weight: 900;
+    color: var(--myrtille-500);
+    line-height: 1;
+}
+
+.jto-gameover__score-total {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.jto-gameover__msg {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.jto-gameover__rounds {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    width: 100%;
+}
+
+.jto-gameover__round {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid var(--border-soft);
+}
+
+.jto-gameover__round.is-success {
+    background: rgba(22, 163, 74, 0.08);
+    border-color: rgba(22, 163, 74, 0.2);
+}
+
+.jto-gameover__round.is-fail {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.jto-gameover__round.is-pass {
+    background: rgba(234, 179, 8, 0.08);
+    border-color: rgba(234, 179, 8, 0.2);
+}
+
+.jto-gameover__round-word {
+    color: var(--text-primary);
+}
+
+/* ─── Error Toast ────────────────────────────────────────── */
+
+.jto-error-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #dc2626;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    animation: toast-in 200ms ease;
+}
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}

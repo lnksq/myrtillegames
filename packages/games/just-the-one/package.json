@@ -1,0 +1,8 @@
+{
+    "name": "@myrtille/game-just-the-one",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Just the One — board game adaptation",
+    "main": "index.js",
+    "type": "module"
+}

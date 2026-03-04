@@ -1,0 +1,8 @@
+{
+    "name": "@myrtille/engine",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Game engine contracts — interfaces every game must implement",
+    "main": "index.js",
+    "type": "module"
+}

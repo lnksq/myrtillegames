@@ -1,0 +1,8 @@
+{
+    "name": "@myrtille/games",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Game registry and individual game packages",
+    "main": "registry.js",
+    "type": "module"
+}
