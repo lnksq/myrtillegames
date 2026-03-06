@@ -347,8 +347,9 @@
 
 #game-shell {
     flex: 1;
-    padding: 24px;
-    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 

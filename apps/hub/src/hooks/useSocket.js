@@ -1,10 +1,4 @@
-/**
- * @myrtille/hub — Socket Manager
- *
- * Singleton wrapper around Socket.IO client.
- * Used by the hub's launchGame() to inject a live socket
- * into the game's context object.
- */
+import { useMemo, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { EVENTS } from '@myrtille/shared';
 
@@ -12,7 +6,7 @@ const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3001';
 
 let _socket = null;
 
-export function getSocket() {
+function getOrCreateSocket() {
     if (!_socket) {
         _socket = io(SERVER_URL, {
             autoConnect: true,
@@ -34,9 +28,11 @@ export function getSocket() {
     return _socket;
 }
 
-export function disconnectSocket() {
-    if (_socket) {
-        _socket.disconnect();
-        _socket = null;
-    }
+/**
+ * React hook that provides the singleton Socket.IO instance.
+ * The socket is created once and reused across the app.
+ */
+export function useSocket() {
+    const socket = useMemo(() => getOrCreateSocket(), []);
+    return socket;
 }

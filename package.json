@@ -16,7 +16,14 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "echo \"No tests configured yet\""
   },
-  "keywords": ["games", "multiplayer", "hub"],
+  "keywords": [
+    "games",
+    "multiplayer",
+    "hub"
+  ],
   "author": "Myrtille Games Team",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
 }

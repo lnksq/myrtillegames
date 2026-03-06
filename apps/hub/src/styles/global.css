@@ -1,7 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ─── Myrtille Games — Global Stylesheet ──────────────────── */
 /* Design System: "3DS Blueberry" — Skeuomorphic-modern       */
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
   /* ── Myrtille Brand ─────────────────────────────────────── */

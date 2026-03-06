@@ -1,2 +1,2 @@
-export { BlindtestClient } from './client.js';
+export { Blindtest } from './client.jsx';
 export { BlindtestServer } from './server.js';
