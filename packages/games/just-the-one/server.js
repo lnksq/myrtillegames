@@ -192,8 +192,8 @@ export class JustTheOneServer extends GameServer {
                     [action.playerId]: { word, valid: true }, // valid will be determined at resolution
                 };
 
-                // Check if all non-guesser players have submitted
-                const nonGuessers = state.players.filter(p => p.id !== guesser.id);
+                // Check if all online non-guesser players have submitted
+                const nonGuessers = state.players.filter(p => p.id !== guesser.id && p.online !== false);
                 const allSubmitted = nonGuessers.every(p => updatedClues[p.id]);
 
                 if (allSubmitted) {
@@ -279,6 +279,39 @@ export class JustTheOneServer extends GameServer {
             default:
                 return state;
         }
+    }
+
+    // ─── Disconnect Handling ──────────────────────────────────
+    handleDisconnect(playerId, state, room) {
+        if (!state || state.phase === 'game_over') return null;
+
+        const guesser = state.players[state.guesserIndex];
+
+        // If the active guesser disconnects, we should ideally auto-pass their turn.
+        // We can do this safely if they are in a phase where they are blocking.
+        if (playerId === guesser.id) {
+            if (state.phase === 'number_selection') {
+                // Auto-pick a random number (1-5) to keep the game moving, or just auto-pass.
+                // Let's auto-pass the round.
+                return this._scoreRound({ ...state, guess: null, result: 'pass' });
+            }
+            if (state.phase === 'guessing') {
+                // Auto-pass
+                return this._scoreRound({ ...state, guess: null, result: 'pass' });
+            }
+        } else {
+            // A clue-giver disconnected
+            if (state.phase === 'clue_giving') {
+                // Check if we were only waiting for this person.
+                const nonGuessers = state.players.filter(p => p.id !== guesser.id && p.online !== false);
+                const allSubmitted = nonGuessers.every(p => state.clues[p.id]);
+
+                if (allSubmitted && nonGuessers.length > 0) {
+                    return this._resolveClues(state);
+                }
+            }
+        }
+        return null; // State unchanged
     }
 
     // ─── Internal Helpers ─────────────────────────────────────

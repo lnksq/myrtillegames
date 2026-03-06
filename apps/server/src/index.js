@@ -197,6 +197,14 @@ io.on(EVENTS.CONNECT, (socket) => {
                         console.log(`🏠 Room ${code} is empty, deleting.`);
                         rooms.delete(code);
                     } else {
+                        // Let the game handler know, if it supports it, so it can auto-resolve blocked states
+                        if (room.gameHandler && typeof room.gameHandler.handleDisconnect === 'function') {
+                            const newState = room.gameHandler.handleDisconnect(pId, room.gameState, room);
+                            if (newState) {
+                                room.gameState = newState;
+                                io.to(code).emit(EVENTS.GAME_STATE, room.gameState);
+                            }
+                        }
                         io.to(code).emit(EVENTS.ROOM_UPDATE, { code, players: room.players, host: room.host });
                     }
                 }
