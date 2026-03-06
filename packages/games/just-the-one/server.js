@@ -149,7 +149,7 @@ export class JustTheOneServer extends GameServer {
         };
     }
 
-    handleAction(action, state) {
+    handleAction(action, state, room) {
         switch (action.type) {
 
             // ── Phase 1: Active guesser picks a number (1-5) ────
@@ -208,7 +208,8 @@ export class JustTheOneServer extends GameServer {
             case 'FORCE_RESOLVE': {
                 if (state.phase !== 'clue_giving') return state;
                 const guesser = state.players[state.guesserIndex];
-                if (action.playerId !== guesser.id && !action.payload?.isHost) return state;
+                const isHost = room && room.host === action.playerId;
+                if (action.playerId !== guesser.id && !isHost) return state;
                 return this._resolveClues(state);
             }
 
@@ -241,7 +242,8 @@ export class JustTheOneServer extends GameServer {
             // ── Phase 5 (Override): Host manually validates the word ─────────────
             case 'VALIDATE_GUESS': {
                 if (state.phase !== 'scoring') return state;
-                if (!action.payload?.isHost) return state;
+                const isHost = room && room.host === action.playerId;
+                if (!isHost) return state;
                 if (state.result === 'success') return state; // already success
 
                 // Re-score the round as success

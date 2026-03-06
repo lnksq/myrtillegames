@@ -118,7 +118,7 @@ io.on(EVENTS.CONNECT, (socket) => {
         if (!room || !room.gameHandler) return;
 
         const action = { type, payload, playerId: socket.playerId || socket.id };
-        let newState = room.gameHandler.handleAction(action, room.gameState);
+        let newState = room.gameHandler.handleAction(action, room.gameState, room);
 
         // Support async handleAction (returns a Promise)
         if (newState && typeof newState.then === 'function') {
