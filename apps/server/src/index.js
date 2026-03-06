@@ -41,13 +41,16 @@ io.on(EVENTS.CONNECT, (socket) => {
     console.log(`✅ Player connected: ${socket.id}`);
 
     // ── Create Room ──────────────────────────────────────────
-    socket.on(EVENTS.ROOM_CREATE, ({ gameId, playerName }) => {
+    socket.on(EVENTS.ROOM_CREATE, ({ gameId, playerName, playerId }) => {
         const code = generateRoomCode();
+        const pId = playerId || socket.id;
+        socket.playerId = pId;
+
         const room = {
             gameId,
             code,
-            host: socket.id,
-            players: [{ id: socket.id, name: playerName, ready: false }],
+            host: pId,
+            players: [{ id: pId, socketId: socket.id, name: playerName, ready: false }],
             gameState: null,
             gameHandler: null,
         };
@@ -58,23 +61,39 @@ io.on(EVENTS.CONNECT, (socket) => {
     });
 
     // ── Join Room ────────────────────────────────────────────
-    socket.on(EVENTS.ROOM_JOIN, ({ code, playerName }) => {
+    socket.on(EVENTS.ROOM_JOIN, ({ code, playerName, playerId }) => {
         const room = rooms.get(code);
         if (!room) {
             socket.emit(EVENTS.ERROR, { message: `Room "${code}" not found.` });
             return;
         }
 
-        room.players.push({ id: socket.id, name: playerName, ready: false });
+        const pId = playerId || socket.id;
+        socket.playerId = pId;
+
+        // Re-linking logic: check if this player was already in the room
+        const existingPlayer = room.players.find(p => p.id === pId);
+        if (existingPlayer) {
+            existingPlayer.socketId = socket.id;
+            console.log(`🔄 ${playerName} re-linked to room ${code} (playerId: ${pId})`);
+        } else {
+            room.players.push({ id: pId, socketId: socket.id, name: playerName, ready: false });
+            console.log(`👤 ${playerName} joined room ${code} (playerId: ${pId})`);
+        }
+
         socket.join(code);
         io.to(code).emit(EVENTS.ROOM_UPDATE, { code, players: room.players, host: room.host });
-        console.log(`👤 ${playerName} joined room ${code}`);
+
+        // If game is already running, send the current state to the joining player
+        if (room.gameState) {
+            socket.emit(EVENTS.GAME_STATE, room.gameState);
+        }
     });
 
     // ── Start Game ───────────────────────────────────────────
     socket.on(EVENTS.GAME_START, ({ code }) => {
         const room = rooms.get(code);
-        if (!room || room.host !== socket.id) return;
+        if (!room || room.host !== (socket.playerId || socket.id)) return;
 
         try {
             const ServerClass = getGameServer(room.gameId);
@@ -88,13 +107,49 @@ io.on(EVENTS.CONNECT, (socket) => {
     });
 
     // ── Game Action ──────────────────────────────────────────
-    socket.on(EVENTS.GAME_ACTION, ({ code, type, payload }) => {
+    socket.on(EVENTS.GAME_ACTION, async ({ code, type, payload }) => {
         const room = rooms.get(code);
         if (!room || !room.gameHandler) return;
 
-        const action = { type, payload, playerId: socket.id };
-        room.gameState = room.gameHandler.handleAction(action, room.gameState);
+        const action = { type, payload, playerId: socket.playerId || socket.id };
+        let newState = room.gameHandler.handleAction(action, room.gameState);
+
+        // Support async handleAction (returns a Promise)
+        if (newState && typeof newState.then === 'function') {
+            newState = await newState;
+        }
+
+        room.gameState = newState;
         io.to(code).emit(EVENTS.GAME_STATE, room.gameState);
+
+
+        // Handle WhosListening async playlist loading:
+        if (typeof room.gameHandler.checkPlaylistReady === 'function') {
+            const pollInterval = setInterval(() => {
+                const roomNow = rooms.get(code);
+                if (!roomNow) {
+                    clearInterval(pollInterval);
+                    return;
+                }
+                const updatedState = room.gameHandler.checkPlaylistReady(roomNow.gameState);
+                if (updatedState) {
+                    roomNow.gameState = updatedState;
+                    if (room.gameHandler.isGameOver(updatedState)) {
+                        const results = room.gameHandler.getResults(updatedState);
+                        io.to(code).emit(EVENTS.GAME_END, results);
+                    } else {
+                        io.to(code).emit(EVENTS.GAME_STATE, updatedState);
+                    }
+                }
+
+                // Stop polling if game started
+                if (roomNow.gameState.phase && roomNow.gameState.phase !== 'setup' && roomNow.gameState.phase !== 'loading') {
+                    clearInterval(pollInterval);
+                }
+            }, 1000);
+            // Safety: stop polling after 60s
+            setTimeout(() => clearInterval(pollInterval), 60000);
+        }
 
         // Check if game is over
         if (room.gameHandler.isGameOver(room.gameState)) {
@@ -106,19 +161,25 @@ io.on(EVENTS.CONNECT, (socket) => {
 
     // ── Disconnect ───────────────────────────────────────────
     socket.on(EVENTS.DISCONNECT, () => {
-        console.log(`❌ Player disconnected: ${socket.id}`);
+        const socketId = socket.id;
+        const pId = socket.playerId || socketId;
+        console.log(`❌ Player disconnected: ${socketId} (playerId: ${pId})`);
 
         for (const [code, room] of rooms.entries()) {
-            const idx = room.players.findIndex(p => p.id === socket.id);
-            if (idx !== -1) {
-                room.players.splice(idx, 1);
-                io.to(code).emit(EVENTS.ROOM_UPDATE, { code, players: room.players, host: room.host });
+            // Find if this socket was the active one for a player
+            const player = room.players.find(p => p.socketId === socketId);
 
-                // Cleanup empty rooms
-                if (room.players.length === 0) {
-                    rooms.delete(code);
-                    console.log(`🗑️ Room ${code} deleted (empty)`);
-                }
+            if (player) {
+                // We don't remove the player immediately if they have a stable ID,
+                // so they can reconnect. We only remove if it's an ephemeral socket or if room is empty.
+                // For now, let's just update room for UI if we want to show 'offline', 
+                // but the current structure removes them. 
+                // To fix the "word suppression", we MUST keep them in the players array.
+
+                // room.players.splice(idx, 1); // <--- REMOVED
+
+                console.log(`📡 Player ${player.name} (${pId}) is currently disconnected from room ${code}`);
+                io.to(code).emit(EVENTS.ROOM_UPDATE, { code, players: room.players, host: room.host });
             }
         }
     });

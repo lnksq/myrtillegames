@@ -81,3 +81,18 @@ export function generateRoomCode(length = 4) {
     }
     return code;
 }
+
+/**
+ * Get or create a stable player ID for the session.
+ * Uses sessionStorage to persist across reloads but not indefinitely.
+ */
+export function getPlayerId() {
+    if (typeof window === 'undefined') return null; // Server side
+
+    let pid = sessionStorage.getItem('myrtille_player_id');
+    if (!pid) {
+        pid = 'p_' + Math.random().toString(36).substring(2, 10);
+        sessionStorage.setItem('myrtille_player_id', pid);
+    }
+    return pid;
+}
