@@ -492,6 +492,8 @@ function GameOver({ state, socket, roomCode, isHost }) {
 
 export function JustTheOne({ socket }) {
     const [phase, setPhase] = useState('title'); // title | lobby | game
+    const [room, setRoom] = useState(null);
+    const [gameState, setGameState] = useState(null);
     const [playerId, setPlayerId] = useState(getPlayerId());
     const [error, setError] = useState(null);
 
