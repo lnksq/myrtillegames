@@ -131,9 +131,12 @@ function Lobby({ room, socket, playerId }) {
                 <h3 className="jto-lobby__players-title">Joueurs connectés ({room.players.length})</h3>
                 <ul className="jto-lobby__list" id="jto-players-list">
                     {room.players.map(p => (
-                        <li key={p.id} className={`jto-lobby__player ${p.id === room.host ? 'is-host' : ''}`}>
+                        <li key={p.id} className={`jto-lobby__player ${p.id === room.host ? 'is-host' : ''} ${!p.online ? 'is-offline' : ''}`}>
                             <span className="jto-lobby__player-avatar">{getAvatar(p.name)}</span>
-                            <span className="jto-lobby__player-name">{p.name}</span>
+                            <span className="jto-lobby__player-name">
+                                {p.name}
+                                {!p.online && <span className="jto-lobby__offline-tag"> (déconnecté)</span>}
+                            </span>
                             {p.id === room.host && <span className="jto-lobby__host-badge">Hôte</span>}
                         </li>
                     ))}

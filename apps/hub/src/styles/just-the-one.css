@@ -299,6 +299,19 @@
     background: rgba(124, 58, 237, 0.04);
 }
 
+.jto-lobby__player.is-offline {
+    opacity: 0.5;
+    background: var(--bg-utility);
+    border-style: dashed;
+}
+
+.jto-lobby__offline-tag {
+    font-size: 11px;
+    font-style: italic;
+    color: var(--text-muted);
+    margin-left: 4px;
+}
+
 .jto-lobby__player-avatar {
     font-size: 20px;
     line-height: 1;
