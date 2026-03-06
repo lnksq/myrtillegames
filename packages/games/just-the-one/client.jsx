@@ -410,6 +410,14 @@ function Scoring({ state, socket, roomCode, isHost }) {
         });
     };
 
+    const handleValidate = () => {
+        socket.emit(EVENTS.GAME_ACTION, {
+            code: roomCode,
+            type: 'VALIDATE_GUESS',
+            payload: { isHost: true },
+        });
+    };
+
     return (
         <div className="jto jto-game">
             <Scoreboard state={state} />
@@ -423,6 +431,12 @@ function Scoring({ state, socket, roomCode, isHost }) {
                 <p className="jto-result__msg">{state.message || ''}</p>
                 {last.extraCardLost && (
                     <p className="jto-result__penalty">⚠️ Mauvaise réponse : la prochaine carte est aussi perdue !</p>
+                )}
+
+                {isHost && last.result !== 'success' && (
+                    <button className="jto-btn jto-btn--secondary jto-validate-btn" onClick={handleValidate}>
+                        💎 C'est bon, on valide !
+                    </button>
                 )}
             </div>
 

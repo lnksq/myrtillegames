@@ -76,10 +76,40 @@ function areSameFamily(a, b) {
 }
 
 /**
- * Check a guess against the secret word (same tolerance as clue comparison).
+ * Simple Levenshtein distance for fuzzy matching.
+ */
+function levenshtein(a, b) {
+    const tmp = [];
+    for (let i = 0; i <= a.length; i++) {
+        tmp[i] = [i];
+    }
+    for (let j = 0; j <= b.length; j++) {
+        tmp[0][j] = j;
+    }
+    for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+            tmp[i][j] = Math.min(
+                tmp[i - 1][j] + 1,
+                tmp[i][j - 1] + 1,
+                tmp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+            );
+        }
+    }
+    return tmp[a.length][b.length];
+}
+
+/**
+ * Check a guess against the secret word.
+ * Lenient: same family OR Levenshtein distance <= 2 (for words > 4 chars) or 1 (for shorter).
  */
 function isCorrectGuess(guess, secretWord) {
-    return areSameFamily(normalize(guess), normalize(secretWord));
+    const g = normalize(guess);
+    const s = normalize(secretWord);
+    if (areSameFamily(g, s)) return true;
+
+    const distance = levenshtein(g, s);
+    const threshold = s.length > 4 ? 2 : 1;
+    return distance <= threshold;
 }
 
 // ─── Just the One — Game Server ──────────────────────────────
@@ -115,6 +145,7 @@ export class JustTheOneServer extends GameServer {
             round: 1,
             totalRounds: 13,
             message: null,
+            manualValidation: false,     // track if host overrode the result
         };
     }
 
@@ -207,7 +238,37 @@ export class JustTheOneServer extends GameServer {
                 return this._scoreRound({ ...state, guess: null, result: 'pass' });
             }
 
-            // ── Phase 5: Move to next round ──────────────────────
+            // ── Phase 5 (Override): Host manually validates the word ─────────────
+            case 'VALIDATE_GUESS': {
+                if (state.phase !== 'scoring') return state;
+                if (!action.payload?.isHost) return state;
+                if (state.result === 'success') return state; // already success
+
+                // Re-score the round as success
+                // We need to revert the penalties applied in the previous _scoreRound call
+                const lastResult = state.roundResults[state.roundResults.length - 1];
+                let score = state.score + 1;
+                let cardsLost = state.cardsLost - (lastResult.extraCardLost ? 2 : 1);
+
+                const updatedRoundResults = [...state.roundResults];
+                updatedRoundResults[updatedRoundResults.length - 1] = {
+                    ...lastResult,
+                    result: 'success',
+                    extraCardLost: false,
+                    manualValidation: true,
+                };
+
+                return {
+                    ...state,
+                    score,
+                    cardsLost,
+                    result: 'success',
+                    roundResults: updatedRoundResults,
+                    message: `💎 Validé manuellement par l'hôte ! Le mot "${state.secretWord}" est accepté.`,
+                };
+            }
+
+            // ── Phase 6: Move to next round ──────────────────────
             case 'NEXT_ROUND': {
                 if (state.phase !== 'scoring') return state;
                 return this._nextRound(state);
