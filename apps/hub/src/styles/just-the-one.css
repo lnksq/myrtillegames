@@ -371,42 +371,140 @@
     font-weight: 700;
 }
 
-/* ─── Scoreboard ─────────────────────────────────────────── */
+/* ─── HUD (Dashboard) ────────────────────────────────────── */
 
-.jto-scoreboard {
+.jto-hud {
     display: flex;
     justify-content: center;
-    gap: 24px;
-    padding: 10px 20px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-soft);
-    border-radius: 12px;
+    gap: 16px;
     width: 100%;
+    margin-bottom: 8px;
 }
 
-.jto-scoreboard__item {
+.jto-hud__panel {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1.5px solid rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 10px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
+    gap: 4px;
+    box-shadow:
+        0 4px 12px rgba(124, 58, 237, 0.05),
+        inset 0 2px 4px rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
 }
 
-.jto-scoreboard__label {
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+.jto-hud__label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
+    color: var(--myrtille-400);
+}
+
+.jto-hud__display {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.jto-hud__display--glow {
+    color: #16a34a;
+    text-shadow: 0 0 12px rgba(22, 163, 74, 0.4);
+}
+
+.jto-hud__display-total {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-left: 2px;
+}
+
+/* ─── Player Roster ──────────────────────────────────────── */
+
+.jto-roster {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.jto-roster__chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px 6px 8px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-soft);
+    border-radius: 30px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+}
+
+.jto-roster__chip.is-guesser {
+    border-color: var(--myrtille-300);
+    background: rgba(124, 58, 237, 0.06);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+}
+
+.jto-roster__chip.is-ready {
+    border-color: rgba(22, 163, 74, 0.4);
+    background: rgba(22, 163, 74, 0.06);
+}
+
+.jto-roster__chip.is-thinking {
+    border-color: rgba(234, 179, 8, 0.4);
+    background: rgba(234, 179, 8, 0.06);
+}
+
+.jto-roster__chip.is-offline {
+    opacity: 0.5;
+    border-style: dashed;
+    background: var(--bg-utility);
+}
+
+.jto-roster__avatar {
+    font-size: 20px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.jto-roster__info {
+    display: flex;
+    flex-direction: column;
+}
+
+.jto-roster__name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.jto-roster__status {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     color: var(--text-muted);
 }
 
-.jto-scoreboard__value {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text-primary);
+.jto-roster__chip.is-guesser .jto-roster__status {
+    color: var(--myrtille-500);
 }
 
-.jto-scoreboard__value.is-success {
+.jto-roster__chip.is-ready .jto-roster__status {
     color: #16a34a;
+}
+
+.jto-roster__chip.is-thinking .jto-roster__status {
+    color: #ca8a04;
 }
 
 /* ─── Number Selection ───────────────────────────────────── */
