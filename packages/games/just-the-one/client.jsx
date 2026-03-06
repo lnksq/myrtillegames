@@ -10,29 +10,63 @@ function getAvatar(name) {
 
 // ─── Sub-Components ──────────────────────────────────────────
 
-function Scoreboard({ state }) {
-    const guesser = state.players[state.guesserIndex];
+function GameHeader({ state }) {
     return (
-        <div className="jto-scoreboard">
-            <div className="jto-scoreboard__item">
-                <span className="jto-scoreboard__label">Score</span>
-                <span className="jto-scoreboard__value is-success">{state.score}</span>
+        <div className="jto-hud">
+            <div className="jto-hud__panel jto-hud__score">
+                <div className="jto-hud__label">SCORE</div>
+                <div className="jto-hud__display jto-hud__display--glow">
+                    {String(state.score).padStart(2, '0')}
+                </div>
             </div>
-            <div className="jto-scoreboard__item">
-                <span className="jto-scoreboard__label">Carte</span>
-                <span className="jto-scoreboard__value">{state.currentCardIndex + 1} / {state.totalRounds}</span>
+
+            <div className="jto-hud__panel jto-hud__round">
+                <div className="jto-hud__label">CARTE</div>
+                <div className="jto-hud__display">
+                    {state.currentCardIndex + 1}<span className="jto-hud__display-total">/{state.totalRounds}</span>
+                </div>
             </div>
-            <div className="jto-scoreboard__item">
-                <span className="jto-scoreboard__label">Joueurs</span>
-                <span className="jto-scoreboard__value">
-                    {state.players.map((p, i) => (
-                        <span key={p.id}>
-                            {i > 0 && ', '}
-                            {p.id === guesser?.id ? <strong>{p.name}</strong> : p.name}
-                        </span>
-                    ))}
-                </span>
-            </div>
+        </div>
+    );
+}
+
+function PlayerRoster({ state }) {
+    const guesserIndex = state.guesserIndex;
+    const guesser = state.players[guesserIndex];
+
+    return (
+        <div className="jto-roster">
+            {state.players.map((p) => {
+                const isGuesser = p.id === guesser?.id;
+                const isOffline = p.online === false;
+
+                let statusText = isGuesser ? "Devineur" : "Indicateur";
+                let statusClass = isGuesser ? "is-guesser" : "is-giver";
+
+                if (isOffline) {
+                    statusText = "Déconnecté";
+                    statusClass = "is-offline";
+                } else if (state.phase === 'clue_giving' && !isGuesser) {
+                    const hasSubmitted = !!state.clues[p.id];
+                    if (hasSubmitted) {
+                        statusText = "Prêt";
+                        statusClass = "is-ready";
+                    } else {
+                        statusText = "Réfléchit...";
+                        statusClass = "is-thinking";
+                    }
+                }
+
+                return (
+                    <div key={p.id} className={`jto-roster__chip ${statusClass}`}>
+                        <div className="jto-roster__avatar">{getAvatar(p.name)}</div>
+                        <div className="jto-roster__info">
+                            <span className="jto-roster__name">{p.name}</span>
+                            <span className="jto-roster__status">{statusText}</span>
+                        </div>
+                    </div>
+                );
+            })}
         </div>
     );
 }
@@ -176,10 +210,11 @@ function NumberSelection({ state, iAmGuesser, guesser, socket, roomCode }) {
 
     return (
         <div className="jto jto-game">
-            <Scoreboard state={state} />
+            <GameHeader state={state} />
+            <PlayerRoster state={state} />
 
             <div className="jto-phase-label">
-                Round {state.round} / {state.totalRounds} — {guesser?.name} doit deviner
+                Tour {state.round} — {guesser?.name} doit deviner
             </div>
 
             {iAmGuesser ? (
@@ -246,7 +281,8 @@ function ClueGiving({ state, iAmGuesser, guesser, socket, roomCode, playerId }) 
 
     return (
         <div className="jto jto-game">
-            <Scoreboard state={state} />
+            <GameHeader state={state} />
+            <PlayerRoster state={state} />
 
             <div className="jto-phase-label">
                 ✍️ Phase d'indices
@@ -341,7 +377,8 @@ function Guessing({ state, iAmGuesser, guesser, socket, roomCode }) {
 
     return (
         <div className="jto jto-game">
-            <Scoreboard state={state} />
+            <GameHeader state={state} />
+            <PlayerRoster state={state} />
 
             <div className="jto-phase-label">🔍 Phase de devinette</div>
 
@@ -420,7 +457,8 @@ function Scoring({ state, socket, roomCode, isHost }) {
 
     return (
         <div className="jto jto-game">
-            <Scoreboard state={state} />
+            <GameHeader state={state} />
+            <PlayerRoster state={state} />
 
             <div className={`jto-result ${colorClass}`}>
                 <div className="jto-result__icon">
